@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 //        start onboarding screen
-        val intent = Intent(this, OnboardingActivity::class.java)
+        val intent = Intent(this, DashboardActivity::class.java)
         startActivity(intent);
     }
 }
