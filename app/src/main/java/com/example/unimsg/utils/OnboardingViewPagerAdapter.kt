@@ -1,4 +1,4 @@
-package com.example.unimsg
+package com.example.unimsg.utils
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.viewpager.widget.PagerAdapter
+import com.example.unimsg.R
 
 class OnboardingViewPagerAdapter(var context: Context) : PagerAdapter() {
 
