@@ -1,0 +1,50 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Linear Gradient Background -->
+    <item
+        android:width="1200dp"
+        android:height="1200dp"
+        >
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="45"
+                android:type="linear"
+                android:startColor="#CED9E3"
+                android:centerColor="#E7D6E7"
+                android:endColor="#C4A6EB"
+                android:useLevel="false"/>
+        </shape>
+    </item>
+    <!-- Circular Gradient Background -->
+    <item
+        android:width="120dp"
+        android:height="120dp"
+        android:gravity="top|left"
+        >
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:startColor="#E3D1DD"
+                android:centerColor="#DFCACC"
+                android:endColor="#00FFFFFF"
+                android:gradientRadius="65dp"/>
+        </shape>
+    </item>
+
+    <item
+        android:width="120dp"
+        android:height="120dp"
+        android:gravity="bottom|right"
+        >
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:startColor="#E3D1DD"
+                android:centerColor="#DFCACC"
+                android:endColor="#00FFFFFF"
+                android:gradientRadius="65dp"/>
+        </shape>
+    </item>
+
+
+</layer-list>
