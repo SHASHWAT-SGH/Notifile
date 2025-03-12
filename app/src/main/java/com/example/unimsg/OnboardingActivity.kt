@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.example.unimsg.utils.OnboardingViewPagerAdapter
 import com.example.unimsg.utils.getStatusBarHeight
 
 class OnboardingActivity : AppCompatActivity() {

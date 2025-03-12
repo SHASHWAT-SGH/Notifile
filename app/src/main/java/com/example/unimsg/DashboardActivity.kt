@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.unimsg.utils.NotificationAdapter
+import com.example.unimsg.utils.NotificationEntity
 import com.google.android.material.snackbar.Snackbar
 import com.example.unimsg.utils.getStatusBarHeight
 
@@ -28,35 +30,59 @@ class DashboardActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_dashboard)
 
-        val mainLayout = findViewById<View>(R.id.main)
-        mainLayout.setPadding(0, getStatusBarHeight(this)+20, 0, 0)
+        val mainLayout = findViewById<View>(R.id.main_dashboard)
+        mainLayout.setPadding(0, getStatusBarHeight(this)+40, 0, 0)
 
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        notificationList.add(NotificationEntity("WhatsApp", "New message from John", "2 min ago"))
-        notificationList.add(NotificationEntity("Instagram", "New follower request", "5 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
-        notificationList.add(NotificationEntity("Gmail", "Your order has been shipped", "10 min ago"))
+        notificationList.add(
+            NotificationEntity(
+                R.drawable.ic_whatsapp,
+                "WhatsApp",
+                "4:13 pm",
+                "Meghana",
+                "Reacted ❤️ &quot;Oookkk&quot;"
+            )
+        )
+        notificationList.add(
+            NotificationEntity(
+                R.drawable.ic_whatsapp,
+                "WhatsApp",
+                "4:13 pm",
+                "Meghana",
+                "Reacted ❤️ &quot;Oookkk&quot;"
+            )
+        )
+        notificationList.add(
+            NotificationEntity(
+                R.drawable.ic_whatsapp,
+                "WhatsApp",
+                "4:13 pm",
+                "Meghana",
+                "Reacted ❤️ &quot;Oookkk&quot;"
+            )
+        )
+        notificationList.add(
+            NotificationEntity(
+                R.drawable.ic_whatsapp,
+                "WhatsApp",
+                "4:13 pm",
+                "Meghana",
+                "Reacted ❤️ &quot;Oookkk&quot;"
+            )
+        )
+        notificationList.add(
+            NotificationEntity(
+                R.drawable.ic_whatsapp,
+                "WhatsApp",
+                "4:13 pm",
+                "Meghana",
+                "Reacted ❤️ &quot;Oookkk&quot;"
+            )
+        )
+
 
         adapter = NotificationAdapter(notificationList)
         recyclerView.adapter = adapter
@@ -90,15 +116,15 @@ class DashboardActivity : AppCompatActivity() {
 //                    }.show()
 
 //            } else
-                if (direction == ItemTouchHelper.LEFT) {
-                // Delete action
-                notificationList.removeAt(position)
-                adapter.notifyItemRemoved(position)
-                Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO") {
-                        notificationList.add(position, deletedNotification)
-                        adapter.notifyItemInserted(position)
-                    }.show()
+            if (direction == ItemTouchHelper.LEFT) {
+            // Delete action
+            notificationList.removeAt(position)
+            adapter.notifyItemRemoved(position)
+            Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
+                .setAction("UNDO") {
+                    notificationList.add(position, deletedNotification)
+                    adapter.notifyItemInserted(position)
+                }.show()
             }
         }
 
