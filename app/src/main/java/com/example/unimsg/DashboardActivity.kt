@@ -43,45 +43,42 @@ class DashboardActivity : AppCompatActivity() {
                 "WhatsApp",
                 "4:13 pm",
                 "Meghana",
-                "Reacted ❤️ &quot;Oookkk&quot;"
+                "Reacted ❤️ \"Oookkk\""
             )
         )
+
         notificationList.add(
             NotificationEntity(
                 R.drawable.ic_whatsapp,
                 "WhatsApp",
                 "4:13 pm",
                 "Meghana",
-                "Reacted ❤️ &quot;Oookkk&quot;"
+                "Reacted ❤️ \"Oookkk\""
             )
         )
+
+
         notificationList.add(
             NotificationEntity(
                 R.drawable.ic_whatsapp,
                 "WhatsApp",
                 "4:13 pm",
                 "Meghana",
-                "Reacted ❤️ &quot;Oookkk&quot;"
+                "Reacted ❤️ \"Oookkk\""
             )
         )
+
         notificationList.add(
             NotificationEntity(
                 R.drawable.ic_whatsapp,
                 "WhatsApp",
                 "4:13 pm",
                 "Meghana",
-                "Reacted ❤️ &quot;Oookkk&quot;"
+                "Reacted ❤️ \"Oookkk\""
             )
         )
-        notificationList.add(
-            NotificationEntity(
-                R.drawable.ic_whatsapp,
-                "WhatsApp",
-                "4:13 pm",
-                "Meghana",
-                "Reacted ❤️ &quot;Oookkk&quot;"
-            )
-        )
+
+
 
 
         adapter = NotificationAdapter(notificationList)
@@ -140,21 +137,21 @@ class DashboardActivity : AppCompatActivity() {
         ) {
             val itemView = viewHolder.itemView
             val context = recyclerView.context
-            val deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete)
-            val backgroundColorDelete = Color.parseColor("#F44336") // Red for delete
+            val deleteIcon = ContextCompat.getDrawable(context, R.drawable.baseline_delete_outline_24)
+//            val backgroundColorDelete = Color.parseColor("#F44336") // Red for delete
 
             val paint = Paint()
 
             // Swipe left (Delete)
-            if (dX < 0) {
+            if (dX < -180) {
                 val backgroundRect = RectF(
                     itemView.right + dX, itemView.top.toFloat(),
                     itemView.right.toFloat(), itemView.bottom.toFloat()
                 )
 
                 // Draw background
-                paint.color = backgroundColorDelete
-                c.drawRect(backgroundRect, paint)
+//                paint.color = backgroundColorDelete
+//                c.drawRect(backgroundRect, paint)
 
                 // Draw delete icon
                 deleteIcon?.let {
