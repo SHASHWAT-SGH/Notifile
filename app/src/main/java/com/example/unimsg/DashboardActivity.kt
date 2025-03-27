@@ -1,25 +1,23 @@
 package com.example.unimsg
 
-import android.content.Context
-import android.content.Intent
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Bundle
-import android.provider.Settings
-import androidx.activity.enableEdgeToEdge
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.utils.NotificationAdapter
 import com.example.unimsg.utils.NotificationEntity
+import com.example.unimsg.utils.NotificationRepository
 import com.example.unimsg.utils.checkNotificationPermission
-import com.google.android.material.snackbar.Snackbar
 import com.example.unimsg.utils.getStatusBarHeight
+import com.google.android.material.snackbar.Snackbar
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -38,56 +36,28 @@ class DashboardActivity : AppCompatActivity() {
         val mainLayout = findViewById<View>(R.id.main_dashboard)
         mainLayout.setPadding(0, getStatusBarHeight(this)+40, 0, 0)
 
+        adapter = NotificationAdapter(notificationList)
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        notificationList.add(
-            NotificationEntity(
-                R.drawable.ic_whatsapp,
-                "WhatsApp",
-                "4:13 pm",
-                "Meghana",
-                "Reacted ❤️ \"Oookkk\""
-            )
-        )
-
-        notificationList.add(
-            NotificationEntity(
-                R.drawable.ic_whatsapp,
-                "WhatsApp",
-                "4:13 pm",
-                "Meghana",
-                "Reacted ❤️ \"Oookkk\""
-            )
-        )
-
-
-        notificationList.add(
-            NotificationEntity(
-                R.drawable.ic_whatsapp,
-                "WhatsApp",
-                "4:13 pm",
-                "Meghana",
-                "Reacted ❤️ \"Oookkk\""
-            )
-        )
-
-        notificationList.add(
-            NotificationEntity(
-                R.drawable.ic_whatsapp,
-                "WhatsApp",
-                "4:13 pm",
-                "Meghana",
-                "Reacted ❤️ \"Oookkk\""
-            )
-        )
-
-
-
-
-        adapter = NotificationAdapter(notificationList)
         recyclerView.adapter = adapter
+
+//        notificationList.add(
+//            NotificationEntity(
+//                R.drawable.ic_whatsapp,
+//                "WhatsApp",
+//                "4:13 pm",
+//                "Meghana",
+//                "Reacted ❤️ \"Oookkk\""
+//            )
+//        )
+
+        NotificationRepository.notifications.observe(this, Observer { newList ->
+            notificationList.clear()
+            notificationList.addAll(newList)  // Update notificationList
+            adapter.notifyDataSetChanged()    // Notify RecyclerView to refresh
+        })
+
 
         // Attach swipe gestures
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)

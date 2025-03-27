@@ -45,6 +45,19 @@ class NotificationListener : NotificationListenerService() {
 //            pendingIntent?.send()
 
 
+            // Create NotificationEntity
+            val notificationEntity = NotificationEntity(
+                appIcon = appIcon,
+                appName = appName,
+                time = timestamp,
+                notificationHeading = title,
+                notificationContent = description
+            )
+
+            // Add to NotificationRepository
+            NotificationRepository.addNotification(notificationEntity)
+
+
             // Log the details
             Log.d("NotificationListener", "App Name: $appName")
             Log.d("NotificationListener", "Title: $title")
