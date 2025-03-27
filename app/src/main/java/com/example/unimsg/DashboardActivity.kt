@@ -1,10 +1,13 @@
 package com.example.unimsg
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.enableEdgeToEdge
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.utils.NotificationAdapter
 import com.example.unimsg.utils.NotificationEntity
+import com.example.unimsg.utils.checkNotificationPermission
 import com.google.android.material.snackbar.Snackbar
 import com.example.unimsg.utils.getStatusBarHeight
 
@@ -29,6 +33,7 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_dashboard)
+        checkNotificationPermission(this)
 
         val mainLayout = findViewById<View>(R.id.main_dashboard)
         mainLayout.setPadding(0, getStatusBarHeight(this)+40, 0, 0)
@@ -88,6 +93,7 @@ class DashboardActivity : AppCompatActivity() {
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
 
     }
+
     private val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
         override fun onMove(
