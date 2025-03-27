@@ -1,5 +1,6 @@
 package com.example.unimsg.utils
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +13,11 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
     RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        var appIcon = itemView.findViewById<ImageView>(R.id.img_notification_icon)
-        var appName = itemView.findViewById<TextView>(R.id.txt_app_name)
-        var time = itemView.findViewById<TextView>(R.id.txt_time)
-        var notificationHeading = itemView.findViewById<TextView>(R.id.notification_heading)
-        var notificationContent = itemView.findViewById<TextView>(R.id.notification_content)
+        var appIcon: ImageView = itemView.findViewById(R.id.img_notification_icon)
+        var appName: TextView = itemView.findViewById(R.id.txt_app_name)
+        var time: TextView = itemView.findViewById(R.id.txt_time)
+        var notificationHeading: TextView = itemView.findViewById(R.id.notification_heading)
+        var notificationContent: TextView = itemView.findViewById(R.id.notification_content)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
@@ -28,7 +28,9 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
         val notification = notifications[position]
 
-        holder.appIcon.setImageResource(notification.appIcon)
+        // Set app icon safely
+        holder.appIcon.setImageDrawable(notification.appIcon ?: holder.itemView.context.getDrawable(R.drawable.ic_delete))
+
         holder.appName.text = notification.appName
         holder.time.text = notification.time
         holder.notificationHeading.text = notification.notificationHeading
@@ -36,6 +38,13 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
     }
 
     override fun getItemCount(): Int = notifications.size
+
+    // Function to update the list dynamically
+    fun updateList(newList: MutableList<NotificationEntity>) {
+        notifications.clear()
+        notifications.addAll(newList)
+        notifyDataSetChanged()  // Notify RecyclerView of data change
+    }
 
     fun removeItem(position: Int) {
         notifications.removeAt(position)
