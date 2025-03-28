@@ -1,11 +1,13 @@
 package com.example.unimsg.utils
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.R
 
@@ -25,6 +27,7 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
         return NotificationViewHolder(view)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
         val notification = notifications[position]
 
@@ -32,7 +35,11 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
         holder.appIcon.setImageDrawable(notification.appIcon ?: holder.itemView.context.getDrawable(R.drawable.ic_delete))
 
         holder.appName.text = notification.appName
-        holder.time.text = notification.time
+        holder.time.text = buildString {
+            append(notification.time.hour.toString())
+            append(":")
+            append(notification.time.minute.toString())
+        }
         holder.notificationHeading.text = notification.notificationHeading
         holder.notificationContent.text = notification.notificationContent
     }
