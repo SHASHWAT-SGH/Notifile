@@ -13,7 +13,7 @@ import com.example.unimsg.R
 class OnboardingViewPagerAdapter(var context: Context) : PagerAdapter() {
 
     private var images: IntArray = intArrayOf(
-        R.drawable.img_onboarding_screen_1,
+        R.drawable.img_onboarding_screen_1_temp,
         R.drawable.img_onboarding_screen_2,
         R.drawable.img_onboarding_screen_3,
     )
