@@ -1,9 +1,12 @@
 package com.example.unimsg
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +26,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationAdapter
+    private var hasVibrated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +88,9 @@ class DashboardActivity : AppCompatActivity() {
             val deleteIcon = ContextCompat.getDrawable(context, R.drawable.baseline_delete_outline_24)
             val paint = Paint()
 
+            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+
             if (dX < -180) {
                 val backgroundRect = RectF(
                     itemView.right + dX, itemView.top.toFloat(),
@@ -101,6 +108,18 @@ class DashboardActivity : AppCompatActivity() {
                     it.setBounds(iconLeft, iconTop, iconRight, iconBottom)
                     it.draw(c)
                 }
+
+                // Vibrate only once when the delete icon appears
+                if (!hasVibrated) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.EFFECT_TICK))
+                    } else {
+                        vibrator.vibrate(50) // Deprecated in API 26+, but needed for older devices
+                    }
+                    hasVibrated = true
+                }
+            } else {
+                hasVibrated = false // Reset when user swipes back
             }
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
