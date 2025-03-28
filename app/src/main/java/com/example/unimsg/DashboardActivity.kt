@@ -21,11 +21,8 @@ import com.google.android.material.snackbar.Snackbar
 
 class DashboardActivity : AppCompatActivity() {
 
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationAdapter
-    private var notificationList = mutableListOf<NotificationEntity>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,72 +31,43 @@ class DashboardActivity : AppCompatActivity() {
         checkNotificationPermission(this)
 
         val mainLayout = findViewById<View>(R.id.main_dashboard)
-        mainLayout.setPadding(0, getStatusBarHeight(this)+40, 0, 0)
-
-        adapter = NotificationAdapter(notificationList)
+        mainLayout.setPadding(0, getStatusBarHeight(this) + 40, 0, 0)
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        adapter = NotificationAdapter(mutableListOf())
         recyclerView.adapter = adapter
 
-//        notificationList.add(
-//            NotificationEntity(
-//                R.drawable.ic_whatsapp,
-//                "WhatsApp",
-//                "4:13 pm",
-//                "Meghana",
-//                "Reacted ❤️ \"Oookkk\""
-//            )
-//        )
-
         NotificationRepository.notifications.observe(this, Observer { newList ->
-            notificationList.clear()
-            notificationList.addAll(newList)  // Update notificationList
-            adapter.notifyDataSetChanged()    // Notify RecyclerView to refresh
+            adapter.updateList(newList) // Update RecyclerView directly from LiveData
         })
 
-
-        // Attach swipe gestures
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
-
     }
 
     private val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-
         override fun onMove(
             recyclerView: RecyclerView,
             viewHolder: RecyclerView.ViewHolder,
             target: RecyclerView.ViewHolder
-        ): Boolean {
-            return false // We are not handling move actions
-        }
+        ): Boolean = false
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.adapterPosition
-            val deletedNotification = notificationList[position] // Store for UNDO
+            val notificationList = NotificationRepository.notifications.value ?: return
+            val deletedNotification = notificationList[position]
 
-//            if (direction == ItemTouchHelper.RIGHT) {
-//                // Archive action
-//                notificationList.removeAt(position)
-//                adapter.notifyItemRemoved(position)
-//                Snackbar.make(recyclerView, "Notification archived", Snackbar.LENGTH_LONG)
-//                    .setAction("UNDO") {
-//                        notificationList.add(position, deletedNotification)
-//                        adapter.notifyItemInserted(position)
-//                    }.show()
+            val deletedIndex = NotificationRepository.removeNotification(deletedNotification) // Remove and get index
 
-//            } else
-            if (direction == ItemTouchHelper.LEFT) {
-            // Delete action
-            notificationList.removeAt(position)
-            adapter.notifyItemRemoved(position)
             Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
                 .setAction("UNDO") {
-                    notificationList.add(position, deletedNotification)
-                    adapter.notifyItemInserted(position)
+                    if (deletedIndex >= 0) { // Corrected comparison
+                        NotificationRepository.addNotificationAtIndex(deletedNotification, deletedIndex) // Restore at the same index
+                    }
                 }.show()
-            }
         }
+
 
 
         override fun onChildDraw(
@@ -114,26 +82,17 @@ class DashboardActivity : AppCompatActivity() {
             val itemView = viewHolder.itemView
             val context = recyclerView.context
             val deleteIcon = ContextCompat.getDrawable(context, R.drawable.baseline_delete_outline_24)
-//            val backgroundColorDelete = Color.parseColor("#F44336") // Red for delete
-
             val paint = Paint()
 
-            // Swipe left (Delete)
             if (dX < -180) {
                 val backgroundRect = RectF(
                     itemView.right + dX, itemView.top.toFloat(),
                     itemView.right.toFloat(), itemView.bottom.toFloat()
                 )
 
-                // Draw background
-//                paint.color = backgroundColorDelete
-//                c.drawRect(backgroundRect, paint)
-
-                // Draw delete icon
                 deleteIcon?.let {
                     val iconSize = it.intrinsicHeight
                     val iconMargin = (itemView.height - iconSize) / 2
-
                     val iconLeft = itemView.right - iconSize - iconMargin
                     val iconTop = itemView.top + iconMargin
                     val iconRight = itemView.right - iconMargin
