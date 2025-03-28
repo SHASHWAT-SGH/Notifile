@@ -12,4 +12,23 @@ object NotificationRepository {
         currentList.add(0, notification) // Add latest notification at the top
         _notifications.postValue(currentList)
     }
+
+    fun removeNotification(notification: NotificationEntity): Int {
+        val currentList = _notifications.value ?: return -1
+        val index = currentList.indexOf(notification)
+        if (index != -1) {
+            val updatedList = currentList.toMutableList() // Create a new list to trigger LiveData update
+            updatedList.removeAt(index)
+            _notifications.postValue(updatedList)
+        }
+        return index // Return the original index
+    }
+
+    fun addNotificationAtIndex(notification: NotificationEntity, index: Int) {
+        val currentList = _notifications.value ?: mutableListOf()
+        if (index in 0..currentList.size) {
+            currentList.add(index, notification) // Restore notification at the original index
+            _notifications.postValue(currentList)
+        }
+    }
 }
