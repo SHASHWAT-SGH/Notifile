@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -42,7 +43,18 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+//    implementation("androidx.room:room-runtime:2.5.0") // or a more recent version
+//    annotationProcessor("androidx.room:room-compiler:2.5.0")
+//    // To use Kotlin Symbol Processing (KSP)
+//    implementation("androidx.room:room-ktx:2.5.0")
+//    //ksp("androidx.room:room-compiler:2.5.0")
+//    ksp("com.google.dagger:dagger-compiler:2.51.1")
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 }
