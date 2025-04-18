@@ -11,21 +11,30 @@ import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.utils.NotificationAdapter
+import com.example.unimsg.utils.NotificationDao
+import com.example.unimsg.utils.NotificationDatabase
 import com.example.unimsg.utils.NotificationEntity
 import com.example.unimsg.utils.NotificationRepository
 import com.example.unimsg.utils.checkNotificationPermission
 import com.example.unimsg.utils.getStatusBarHeight
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DashboardActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationAdapter
+    private lateinit var notificationDao: NotificationDao
+    private val localNotifications = MutableLiveData<MutableList<NotificationEntity>>()
     private var hasVibrated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +44,7 @@ class DashboardActivity : AppCompatActivity() {
         checkNotificationPermission(this)
 
         val mainLayout = findViewById<View>(R.id.main_dashboard)
+
         mainLayout.setPadding(0, getStatusBarHeight(this) + 40, 0, 0)
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -44,10 +54,23 @@ class DashboardActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         NotificationRepository.notifications.observe(this, Observer { newList ->
+            localNotifications.value = newList
             adapter.updateList(newList) // Update RecyclerView directly from LiveData
         })
 
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
+
+        // Fetch Data from room database and show on main screen
+        val db = NotificationDatabase.getDatabase(this)
+        notificationDao = db.notificationDao()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val notifications = notificationDao.getAllNotifications()
+            withContext(Dispatchers.Main){
+                localNotifications.value = notifications.toMutableList()
+                adapter.updateList(notifications)
+            }
+        }
     }
 
     private val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {

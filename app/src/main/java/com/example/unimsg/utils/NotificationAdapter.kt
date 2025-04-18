@@ -1,6 +1,7 @@
 package com.example.unimsg.utils
 
-import android.graphics.drawable.Drawable
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.R
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class NotificationAdapter(private var notifications: MutableList<NotificationEntity>) :
     RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
@@ -32,13 +35,30 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
         val notification = notifications[position]
 
         // Set app icon safely
-        holder.appIcon.setImageDrawable(notification.appIcon ?: holder.itemView.context.getDrawable(R.drawable.ic_delete))
+//        holder.appIcon.setImageDrawable(notification.appIcon ?: holder.itemView.context.getDrawable(R.drawable.ic_delete))
+//
+//        holder.appName.text = notification.appName
+//        holder.time.text = buildString {
+//            append(notification.time.hour.toString())
+//            append(":")
+//            append(notification.time.minute.toString())
+//        }
+//        holder.notificationHeading.text = notification.notificationHeading
+//        holder.notificationContent.text = notification.notificationContent
+        // Set app icon safely
+        if (notification.appIcon != null) {
+            val bitmap = BitmapFactory.decodeByteArray(notification.appIcon, 0, notification.appIcon!!.size)
+            holder.appIcon.setImageDrawable(BitmapDrawable(holder.itemView.context.resources, bitmap))
+        } else {
+            holder.appIcon.setImageDrawable(holder.itemView.context.getDrawable(R.drawable.ic_delete)) // Use default icon if no icon present.
+        }
 
         holder.appName.text = notification.appName
+        val time = LocalDateTime.parse(notification.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         holder.time.text = buildString {
-            append(notification.time.hour.toString())
+            append(time.hour.toString())
             append(":")
-            append(notification.time.minute.toString())
+            append(time.minute.toString())
         }
         holder.notificationHeading.text = notification.notificationHeading
         holder.notificationContent.text = notification.notificationContent
@@ -47,7 +67,7 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
     override fun getItemCount(): Int = notifications.size
 
     // Function to update the list dynamically
-    fun updateList(newList: MutableList<NotificationEntity>) {
+    fun updateList(newList: List<NotificationEntity>) {
         notifications.clear()
         notifications.addAll(newList)
         notifyDataSetChanged()  // Notify RecyclerView of data change
