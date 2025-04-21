@@ -85,14 +85,18 @@ class DashboardActivity : AppCompatActivity() {
             val notificationList = NotificationRepository.notifications.value ?: return
             val deletedNotification = notificationList[position]
 
-            val deletedIndex = NotificationRepository.removeNotification(deletedNotification) // Remove and get index
+            CoroutineScope(Dispatchers.IO).launch {
+                val deletedIndex = NotificationRepository.removeNotification(deletedNotification, notificationDao)
 
-            Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
-                .setAction("UNDO") {
-                    if (deletedIndex >= 0) { // Corrected comparison
-                        NotificationRepository.addNotificationAtIndex(deletedNotification, deletedIndex) // Restore at the same index
-                    }
-                }.show()
+                withContext(Dispatchers.Main){
+                    Snackbar.make(recyclerView, "Notification Deleted", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO"){
+                            CoroutineScope(Dispatchers.IO).launch {
+                                NotificationRepository.addNotificationAtIndex(deletedNotification, deletedIndex, notificationDao)
+                            }
+                        }.show()
+                }
+            }
         }
 
 

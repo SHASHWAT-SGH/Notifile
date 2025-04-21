@@ -87,6 +87,7 @@ class NotificationListener : NotificationListenerService() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        Log.d("NotificationListener", "Notification received")
         sbn?.let {
             val packageName = it.packageName
             val notification = it.notification
@@ -121,7 +122,9 @@ class NotificationListener : NotificationListenerService() {
             )
 
             scope.launch {
+                Log.d("NotificationListener", "Inserting notification into database...")
                 database.notificationDao().insert(notificationEntity)
+                Log.d("NotificationListener", "Notification posted into Database")
             }
             NotificationRepository.addNotification(notificationEntity)
 
