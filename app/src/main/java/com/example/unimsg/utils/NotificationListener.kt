@@ -3,6 +3,7 @@ package com.example.unimsg.utils
 import android.app.PendingIntent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -28,7 +29,11 @@ class NotificationListener : NotificationListenerService() {
             val description = extras.getString("android.text") ?: "No Description"
 
             // Get Notification Time & Date
-            val timestamp = formatTime(it.postTime)
+            val timestamp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                formatTime(it.postTime)
+            } else {
+                TODO("VERSION.SDK_INT < O")
+            }
 
             // Get App Icon
             val appIcon: Drawable? = try {

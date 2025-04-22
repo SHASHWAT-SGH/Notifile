@@ -1,0 +1,19 @@
+package com.example.unimsg.db
+
+import android.content.Context
+import androidx.room.Room
+
+object DatabaseClient {
+    private var INSTANCE: AppDatabase? = null
+
+    fun getInstance(context: Context): AppDatabase {
+        if (INSTANCE == null) {
+            INSTANCE = Room.databaseBuilder(
+                context.applicationContext,
+                AppDatabase::class.java,
+                "my-database"
+            ).build()
+        }
+        return INSTANCE!!
+    }
+}
