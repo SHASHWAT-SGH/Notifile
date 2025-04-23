@@ -1,6 +1,5 @@
 package com.example.unimsg.utils
 
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.R
 
-class NotificationAdapter(private var notifications: MutableList<NotificationEntity>) :
+class NotificationAdapter(private var notifications: MutableList<NotificationModel>) :
     RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -47,7 +46,7 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
     override fun getItemCount(): Int = notifications.size
 
     // Function to update the list dynamically
-    fun updateList(newList: MutableList<NotificationEntity>) {
+    fun updateList(newList: MutableList<NotificationModel>) {
         notifications.clear()
         notifications.addAll(newList)
         notifyDataSetChanged()  // Notify RecyclerView of data change

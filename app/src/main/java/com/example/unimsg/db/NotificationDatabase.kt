@@ -10,4 +10,21 @@ import androidx.room.TypeConverters
 @TypeConverters(Converters::class)
 abstract class NotificationDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: NotificationDatabase? = null
+
+        fun getDatabase(context: Context): NotificationDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    NotificationDatabase::class.java,
+                    "notification-db"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 }

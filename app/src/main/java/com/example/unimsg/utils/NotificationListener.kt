@@ -51,7 +51,7 @@ class NotificationListener : NotificationListenerService() {
 
 
             // Create NotificationEntity
-            val notificationEntity = NotificationEntity(
+            val notificationEntity = NotificationModel(
                 appIcon = appIcon,
                 appName = appName,
                 time = timestamp,

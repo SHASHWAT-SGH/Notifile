@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,8 @@ import com.example.unimsg.utils.NotificationRepository
 import com.example.unimsg.utils.checkNotificationPermission
 import com.example.unimsg.utils.getStatusBarHeight
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -36,14 +39,11 @@ class DashboardActivity : AppCompatActivity() {
         checkNotificationPermission(this)
 
 //        db---------
-//        val db = Room.databaseBuilder(
-//            applicationContext,
-//            NotificationDatabase::class.java, "notification-db"
-//        ).build()
-//
-//        val notificationDao = db.notificationDao()
-//        notificationDao.insertNotification(com.example.unimsg.db.NotificationEntity(
-//        ))
+
+        val notificationDao = NotificationDatabase.getDatabase(this).notificationDao()
+        lifecycleScope.launch(Dispatchers.IO) {
+            notificationDao.insertNotification(com.example.unimsg.db.NotificationEntity())
+        }
 
 
 //        -------------

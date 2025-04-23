@@ -9,10 +9,10 @@ import androidx.room.Query
 @Dao
 interface NotificationDao {
     @Insert
-    fun insertNotification(notification: NotificationEntity)
+    suspend fun insertNotification(notification: NotificationEntity)
 
     @Delete
-    fun deleteNotification(notification: NotificationEntity)
+    suspend fun deleteNotification(notification: NotificationEntity)
 
     @Query("SELECT * FROM notifications ORDER BY time DESC")
     fun getNotifications() : LiveData<MutableList<NotificationEntity>>
