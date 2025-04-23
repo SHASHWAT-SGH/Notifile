@@ -1,5 +1,6 @@
 package com.example.unimsg.utils
 
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +10,9 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.R
+import com.example.unimsg.db.NotificationEntity
 
-class NotificationAdapter(private var notifications: MutableList<NotificationModel>) :
+class NotificationAdapter(private var notifications: MutableList<NotificationEntity>) :
     RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,12 +28,19 @@ class NotificationAdapter(private var notifications: MutableList<NotificationMod
         return NotificationViewHolder(view)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
         val notification = notifications[position]
 
         // Set app icon safely
-        holder.appIcon.setImageDrawable(notification.appIcon ?: holder.itemView.context.getDrawable(R.drawable.ic_delete))
+        val byteArrayAppIcon = notification.appIcon  // this is ByteArray? from your Room entity
+
+        if (byteArrayAppIcon != null) {
+            val bitmap = BitmapFactory.decodeByteArray(byteArrayAppIcon, 0, byteArrayAppIcon.size)
+            holder.appIcon.setImageBitmap(bitmap)
+        } else {
+            holder.appIcon.setImageResource(R.drawable.ic_archive) // fallback icon
+        }
 
         holder.appName.text = notification.appName
         holder.time.text = buildString {
@@ -46,7 +55,7 @@ class NotificationAdapter(private var notifications: MutableList<NotificationMod
     override fun getItemCount(): Int = notifications.size
 
     // Function to update the list dynamically
-    fun updateList(newList: MutableList<NotificationModel>) {
+    fun updateList(newList: MutableList<NotificationEntity>) {
         notifications.clear()
         notifications.addAll(newList)
         notifyDataSetChanged()  // Notify RecyclerView of data change

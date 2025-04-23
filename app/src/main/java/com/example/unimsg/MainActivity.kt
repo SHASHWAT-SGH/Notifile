@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
 import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.db.NotificationEntity
 import kotlinx.coroutines.CoroutineScope
@@ -17,8 +18,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 //        ---------
-
-
 
 
 //        ------------

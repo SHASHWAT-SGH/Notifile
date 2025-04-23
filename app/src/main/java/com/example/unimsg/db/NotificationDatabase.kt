@@ -20,7 +20,7 @@ abstract class NotificationDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     NotificationDatabase::class.java,
-                    "notification-db"
+                    "notification-db-test"
                 ).build()
                 INSTANCE = instance
                 instance

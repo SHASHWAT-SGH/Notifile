@@ -1,29 +1,23 @@
 package com.example.unimsg.db
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.unimsg.utils.drawableToByteArray
 import java.time.LocalDateTime
 
 @Entity(tableName = "notifications")
-class NotificationEntity {
+data class NotificationEntity(
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    val id: Int = 0,
 
-    var appName: String = ""
-
-    var time: LocalDateTime = LocalDateTime.of(
-        2020,
-        2,
-        15,
-        16,
-        48,
-        59,
-        999_999_999
-    )
-    var notificationHeading: String = ""
-    var notificationContent: String = ""
-    var appIcon: ByteArray = byteArrayOf()
-}
+    val appName: String,
+    val time: LocalDateTime,
+    val notificationHeading: String,
+    val notificationContent: String,
+    val appIcon: ByteArray? // Store Drawable as ByteArray
+)
 
 
 //import androidx.room.ColumnInfo

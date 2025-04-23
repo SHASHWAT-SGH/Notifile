@@ -7,6 +7,11 @@ import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import com.example.unimsg.db.NotificationDatabase
+import com.example.unimsg.db.NotificationEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
 
@@ -29,11 +34,7 @@ class NotificationListener : NotificationListenerService() {
             val description = extras.getString("android.text") ?: "No Description"
 
             // Get Notification Time & Date
-            val timestamp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                formatTime(it.postTime)
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
+            val timestamp = formatTime(it.postTime)
 
             // Get App Icon
             val appIcon: Drawable? = try {
@@ -50,17 +51,21 @@ class NotificationListener : NotificationListenerService() {
 //            pendingIntent?.send()
 
 
-            // Create NotificationEntity
-            val notificationEntity = NotificationModel(
-                appIcon = appIcon,
-                appName = appName,
-                time = timestamp,
-                notificationHeading = title,
-                notificationContent = description
-            )
-
             // Add to NotificationRepository
-            NotificationRepository.addNotification(notificationEntity)
+            CoroutineScope(Dispatchers.IO).launch {
+                val database = NotificationDatabase.getDatabase(applicationContext)
+                val dao = database.notificationDao()
+
+                val entity = NotificationEntity(
+                    appName = appName,
+                    notificationHeading = title,
+                    notificationContent = description,
+                    time = timestamp,
+                    appIcon = drawableToByteArray(appIcon)
+                )
+
+                dao.insertNotification(entity)
+            }
 
 
             // Log the details

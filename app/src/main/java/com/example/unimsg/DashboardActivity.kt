@@ -31,6 +31,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationAdapter
     private var hasVibrated = false
+    lateinit var repository: NotificationRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,15 +39,8 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_dashboard)
         checkNotificationPermission(this)
 
-//        db---------
-
-        val notificationDao = NotificationDatabase.getDatabase(this).notificationDao()
-        lifecycleScope.launch(Dispatchers.IO) {
-            notificationDao.insertNotification(com.example.unimsg.db.NotificationEntity())
-        }
-
-
-//        -------------
+        val dao = NotificationDatabase.getDatabase(this).notificationDao()
+        repository = NotificationRepository(dao)
 
         val mainLayout = findViewById<View>(R.id.main_dashboard)
         mainLayout.setPadding(0, getStatusBarHeight(this) + 40, 0, 0)
@@ -57,9 +51,9 @@ class DashboardActivity : AppCompatActivity() {
         adapter = NotificationAdapter(mutableListOf())
         recyclerView.adapter = adapter
 
-        NotificationRepository.notifications.observe(this, Observer { newList ->
-            adapter.updateList(newList) // Update RecyclerView directly from LiveData
-        })
+        repository.notifications.observe(this) { newList ->
+            adapter.updateList(newList)
+        }
 
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
     }
@@ -73,15 +67,18 @@ class DashboardActivity : AppCompatActivity() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.adapterPosition
-            val notificationList = NotificationRepository.notifications.value ?: return
+            val notificationList = repository.notifications.value ?: return
             val deletedNotification = notificationList[position]
 
-            val deletedIndex = NotificationRepository.removeNotification(deletedNotification) // Remove and get index
+            // Remove from Room
+            lifecycleScope.launch(Dispatchers.IO) {
+                repository.removeNotification(deletedNotification)
+            }
 
             Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
                 .setAction("UNDO") {
-                    if (deletedIndex >= 0) { // Corrected comparison
-                        NotificationRepository.addNotificationAtIndex(deletedNotification, deletedIndex) // Restore at the same index
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        repository.addNotificationAtIndex(deletedNotification)
                     }
                 }.show()
         }
