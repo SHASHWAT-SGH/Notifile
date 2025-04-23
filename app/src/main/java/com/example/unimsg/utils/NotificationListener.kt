@@ -3,9 +3,15 @@ package com.example.unimsg.utils
 import android.app.PendingIntent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import com.example.unimsg.db.NotificationDatabase
+import com.example.unimsg.db.NotificationEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
 
@@ -45,17 +51,21 @@ class NotificationListener : NotificationListenerService() {
 //            pendingIntent?.send()
 
 
-            // Create NotificationEntity
-            val notificationEntity = NotificationEntity(
-                appIcon = appIcon,
-                appName = appName,
-                time = timestamp,
-                notificationHeading = title,
-                notificationContent = description
-            )
-
             // Add to NotificationRepository
-            NotificationRepository.addNotification(notificationEntity)
+            CoroutineScope(Dispatchers.IO).launch {
+                val database = NotificationDatabase.getDatabase(applicationContext)
+                val dao = database.notificationDao()
+
+                val entity = NotificationEntity(
+                    appName = appName,
+                    notificationHeading = title,
+                    notificationContent = description,
+                    time = timestamp,
+                    appIcon = drawableToByteArray(appIcon)
+                )
+
+                dao.insertNotification(entity)
+            }
 
 
             // Log the details

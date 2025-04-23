@@ -11,8 +11,7 @@ import java.time.LocalDateTime
 //    val notificationContent: String
 //)
 
-
-data class NotificationEntity(
+data class NotificationModel(
     val appIcon: Drawable?,  // Change Int to Drawable?
     val appName: String,
     val time: LocalDateTime,
