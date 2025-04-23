@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.db.NotificationEntity
+import com.example.unimsg.utils.FirstLaunchHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,14 +18,15 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-//        ---------
-
-
-//        ------------
-
-//        start onboarding screen
-        val intent = Intent(this, OnboardingActivity::class.java)
-        startActivity(intent);
-        finish()
+        if (FirstLaunchHelper.isFirstLaunch(this)) {
+            FirstLaunchHelper.setFirstLaunchFlag(this)
+            val intent = Intent(this, OnboardingActivity::class.java)
+            startActivity(intent);
+            finish()
+        }else{
+            val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent);
+            finish()
+        }
     }
 }
