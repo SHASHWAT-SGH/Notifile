@@ -15,8 +15,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.utils.NotificationAdapter
-import com.example.unimsg.utils.NotificationEntity
 import com.example.unimsg.utils.NotificationRepository
 import com.example.unimsg.utils.checkNotificationPermission
 import com.example.unimsg.utils.getStatusBarHeight
@@ -33,6 +34,19 @@ class DashboardActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_dashboard)
         checkNotificationPermission(this)
+
+//        db---------
+//        val db = Room.databaseBuilder(
+//            applicationContext,
+//            NotificationDatabase::class.java, "notification-db"
+//        ).build()
+//
+//        val notificationDao = db.notificationDao()
+//        notificationDao.insertNotification(com.example.unimsg.db.NotificationEntity(
+//        ))
+
+
+//        -------------
 
         val mainLayout = findViewById<View>(R.id.main_dashboard)
         mainLayout.setPadding(0, getStatusBarHeight(this) + 40, 0, 0)
