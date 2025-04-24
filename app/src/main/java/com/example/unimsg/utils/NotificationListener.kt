@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
 
+    lateinit var repository: NotificationRepository
+
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val notificationSwitch = NotificationSwitchStateHelper.getSwitchState(this)
         if(!notificationSwitch){
@@ -57,11 +59,14 @@ class NotificationListener : NotificationListenerService() {
             val pendingIntent: PendingIntent? = notification.contentIntent
 //            pendingIntent?.send()
 
+            val dao = NotificationDatabase.getDatabase(this).notificationDao()
+            repository = NotificationRepository(dao)
+
 
             // Add to NotificationRepository
             CoroutineScope(Dispatchers.IO).launch {
-                val database = NotificationDatabase.getDatabase(applicationContext)
-                val dao = database.notificationDao()
+//                val database = NotificationDatabase.getDatabase(applicationContext)
+//                val dao = database.notificationDao()
 
                 val entity = NotificationEntity(
                     appName = appName,
@@ -71,7 +76,8 @@ class NotificationListener : NotificationListenerService() {
                     appIcon = drawableToByteArray(appIcon)
                 )
 
-                dao.insertNotification(entity)
+//                dao.insertNotification(entity)
+                repository.addNotification(entity)
             }
 
 

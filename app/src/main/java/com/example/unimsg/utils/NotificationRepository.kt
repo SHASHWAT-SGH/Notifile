@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.unimsg.db.NotificationDao
 import com.example.unimsg.db.NotificationEntity
+import java.time.LocalDateTime
 
 class NotificationRepository(private val dao: NotificationDao) {
 
@@ -25,4 +26,7 @@ class NotificationRepository(private val dao: NotificationDao) {
         dao.deleteAllNotifications()
     }
 
+    suspend fun deleteOldNotifications(cutoff: LocalDateTime) {
+        dao.deleteOldNotifications(cutoff)
+    }
 }
