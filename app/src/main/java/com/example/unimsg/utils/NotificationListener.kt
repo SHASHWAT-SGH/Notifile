@@ -7,6 +7,8 @@ import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import android.widget.Switch
+import com.example.unimsg.R
 import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.db.NotificationEntity
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +18,11 @@ import kotlinx.coroutines.launch
 class NotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        val notificationSwitch = NotificationSwitchStateHelper.getSwitchState(this)
+        if(!notificationSwitch){
+            return
+        }
+
         sbn?.let {
             val packageName = it.packageName // App package name
             val notification = it.notification
