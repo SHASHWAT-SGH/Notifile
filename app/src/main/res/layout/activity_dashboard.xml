@@ -79,6 +79,13 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recentlyClearedRecycleView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -88,9 +95,10 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
                 />
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/mainRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical"
