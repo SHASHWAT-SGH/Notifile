@@ -3,6 +3,7 @@ package com.example.unimsg
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Bundle
@@ -11,18 +12,17 @@ import android.os.Vibrator
 import android.view.View
 import android.widget.Switch
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.example.unimsg.db.NotificationDatabase
+import com.example.unimsg.db.NotificationEntity
 import com.example.unimsg.utils.NotificationAdapter
+import com.example.unimsg.utils.NotificationItemAnimator
 import com.example.unimsg.utils.NotificationRepository
 import com.example.unimsg.utils.NotificationSwitchStateHelper
 import com.example.unimsg.utils.checkNotificationPermission
@@ -30,6 +30,7 @@ import com.example.unimsg.utils.getStatusBarHeight
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -37,6 +38,9 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var adapter: NotificationAdapter
     private var hasVibrated = false
     lateinit var repository: NotificationRepository
+    private var deletedNotification: NotificationEntity? = null
+    private var deletedPosition: Int = -1
+    private var isHandlingDelete = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +55,7 @@ class DashboardActivity : AppCompatActivity() {
         btnSearch.setOnClickListener {
             val intent = Intent(this, SearchAndFilterActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out_card)
         }
 
         val dao = NotificationDatabase.getDatabase(this).notificationDao()
@@ -60,29 +65,28 @@ class DashboardActivity : AppCompatActivity() {
         mainLayout.setPadding(0, getStatusBarHeight(this) + 40, 0, 0)
 
         recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        val layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = layoutManager
 
         adapter = NotificationAdapter(mutableListOf())
         recyclerView.adapter = adapter
 
-        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+        // Set our custom item animator
+        recyclerView.itemAnimator = NotificationItemAnimator()
 
-//            TODO("Enable notification lister only if the switch is checked, else clear the table and stop the service")
+        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             NotificationSwitchStateHelper.saveSwitchState(this, isChecked)
-            if (isChecked) {
-//                TODO("Show notifications")
-            } else {
-                // clear all notifications
+            if (!isChecked) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     repository.deleteAllNotification()
                 }
             }
-
-
         }
 
         repository.notifications.observe(this) { newList ->
-            adapter.updateList(newList)
+            if (!isHandlingDelete) {
+                adapter.updateList(newList)
+            }
         }
 
         ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
@@ -97,23 +101,59 @@ class DashboardActivity : AppCompatActivity() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.adapterPosition
-            val notificationList = repository.notifications.value ?: return
-            val deletedNotification = notificationList[position]
+            if (position == RecyclerView.NO_POSITION) return
 
-            // Remove from Room
+            val notificationList = repository.notifications.value ?: return
+            if (position >= notificationList.size) return
+
+            deletedNotification = notificationList[position]
+            deletedPosition = position
+
+            // Set flag to prevent LiveData from interfering
+            isHandlingDelete = true
+
+            // Remove item directly from adapter first for immediate UI feedback
+            adapter.removeItem(position)
+
+            // Then update the database
             lifecycleScope.launch(Dispatchers.IO) {
-                repository.removeNotification(deletedNotification)
+                repository.removeNotification(deletedNotification!!)
             }
 
-            Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
+            // Show snackbar with undo option
+            val snackbar = Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
                 .setAction("UNDO") {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        repository.addNotificationAtIndex(deletedNotification)
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            // First add to database
+                            deletedNotification?.let {
+                                repository.addNotification(it)
+                            }
+                        }
+
+                        // Then update UI directly for immediate feedback
+                        withContext(Dispatchers.Main) {
+                            deletedNotification?.let {
+                                // Insert at correct position in adapter
+                                adapter.insertItem(it, deletedPosition)
+
+                                // Scroll to the position if needed
+                                recyclerView.smoothScrollToPosition(deletedPosition)
+                            }
+                        }
                     }
-                }.show()
+                }
+                .addCallback(object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        // Reset our handling state when snackbar disappears
+                        isHandlingDelete = false
+                        deletedNotification = null
+                        deletedPosition = -1
+                    }
+                })
+
+            snackbar.show()
         }
-
-
 
         override fun onChildDraw(
             c: Canvas,
@@ -131,13 +171,20 @@ class DashboardActivity : AppCompatActivity() {
 
             val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
+            // Draw only if swiping left
+            if (dX < 0) {
+                // Calculate dynamic color intensity
+                val swipeThreshold = itemView.width / 3
+                val alpha = (255 * (minOf(abs(dX), swipeThreshold.toFloat()) / swipeThreshold)).toInt()
+                paint.color = Color.argb(minOf(alpha, 180), 255, 59, 48) // Red with capped alpha
 
-            if (dX < -180) {
                 val backgroundRect = RectF(
                     itemView.right + dX, itemView.top.toFloat(),
                     itemView.right.toFloat(), itemView.bottom.toFloat()
                 )
+                c.drawRect(backgroundRect, paint)
 
+                // Draw delete icon
                 deleteIcon?.let {
                     val iconSize = it.intrinsicHeight
                     val iconMargin = (itemView.height - iconSize) / 2
@@ -146,23 +193,58 @@ class DashboardActivity : AppCompatActivity() {
                     val iconRight = itemView.right - iconMargin
                     val iconBottom = iconTop + iconSize
 
-                    it.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                    it.draw(c)
+                    // Only draw icon when dragged past threshold
+                    if (abs(dX) > iconSize * 2) {
+                        it.alpha = minOf(alpha, 255)
+                        it.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                        it.draw(c)
+                    }
                 }
 
                 // Vibrate only once when the delete icon appears
-                if (!hasVibrated) {
+                if (!hasVibrated && abs(dX) > itemView.width / 3) {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.EFFECT_TICK))
+                        vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.EFFECT_TICK))
                     } else {
                         vibrator.vibrate(50) // Deprecated in API 26+, but needed for older devices
                     }
                     hasVibrated = true
                 }
-            } else {
+            }
+
+            if (dX == 0f) {
                 hasVibrated = false // Reset when user swipes back
             }
+
+            // Make sure to keep scale at 1.0 to avoid lingering transform effects
+            itemView.scaleX = 1.0f
+            itemView.scaleY = 1.0f
+
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+        }
+    }
+
+    // Helper function for absolute value
+    private fun abs(value: Float): Float = if (value < 0) -value else value
+
+    override fun onResume() {
+        super.onResume()
+        // Reset state handling flags
+        isHandlingDelete = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clean up thread executor
+        (adapter as? NotificationAdapter)?.let {
+            try {
+                val field = NotificationAdapter::class.java.getDeclaredField("diffExecutor")
+                field.isAccessible = true
+                val executor = field.get(it) as java.util.concurrent.ExecutorService
+                executor.shutdown()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 }
