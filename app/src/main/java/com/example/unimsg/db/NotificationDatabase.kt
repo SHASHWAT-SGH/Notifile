@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [NotificationEntity::class], version = 1)
+@Database(entities = [NotificationEntity::class, RecentlyClearedNotificationEntity::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class NotificationDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
+    abstract fun recentlyClearedNotificationDao(): RecentlyClearedNotificationDao
 
     companion object {
         @Volatile
@@ -20,7 +21,7 @@ abstract class NotificationDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     NotificationDatabase::class.java,
-                    "notification-db-test-3"
+                    "notification-db-test-5"
                 ).build()
                 INSTANCE = instance
                 instance

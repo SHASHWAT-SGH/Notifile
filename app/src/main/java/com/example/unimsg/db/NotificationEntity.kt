@@ -1,10 +1,7 @@
 package com.example.unimsg.db
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.unimsg.utils.drawableToByteArray
 import java.time.LocalDateTime
 
 @Entity(tableName = "notifications")

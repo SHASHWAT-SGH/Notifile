@@ -25,6 +25,8 @@ import com.example.unimsg.utils.NotificationAdapter
 import com.example.unimsg.utils.NotificationItemAnimator
 import com.example.unimsg.utils.NotificationRepository
 import com.example.unimsg.utils.NotificationSwitchStateHelper
+import com.example.unimsg.utils.RecentNotificationAdapter
+import com.example.unimsg.utils.RecentNotificationRepository
 import com.example.unimsg.utils.checkNotificationPermission
 import com.example.unimsg.utils.getStatusBarHeight
 import com.google.android.material.snackbar.Snackbar
@@ -34,10 +36,13 @@ import kotlinx.coroutines.withContext
 
 class DashboardActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var mainRecyclerView: RecyclerView
+    private lateinit var recentlyClearedRecycleView : RecyclerView
     private lateinit var adapter: NotificationAdapter
+    private lateinit var adapter2: RecentNotificationAdapter
     private var hasVibrated = false
     lateinit var repository: NotificationRepository
+    lateinit var repository2: RecentNotificationRepository
     private var deletedNotification: NotificationEntity? = null
     private var deletedPosition: Int = -1
     private var isHandlingDelete = false
@@ -61,18 +66,28 @@ class DashboardActivity : AppCompatActivity() {
         val dao = NotificationDatabase.getDatabase(this).notificationDao()
         repository = NotificationRepository(dao)
 
+        val dao2 = NotificationDatabase.getDatabase(this).recentlyClearedNotificationDao()
+        repository2 = RecentNotificationRepository(dao2)
+
         val mainLayout = findViewById<View>(R.id.main_dashboard)
         mainLayout.setPadding(0, getStatusBarHeight(this) + 40, 0, 0)
 
-        recyclerView = findViewById(R.id.recyclerView)
+        mainRecyclerView = findViewById(R.id.mainRecyclerView)
+        recentlyClearedRecycleView = findViewById(R.id.recentlyClearedRecycleView)
         val layoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
+        mainRecyclerView.layoutManager = layoutManager
+
+        val layoutManager2 = LinearLayoutManager(this)
+        recentlyClearedRecycleView.layoutManager = layoutManager2
 
         adapter = NotificationAdapter(mutableListOf())
-        recyclerView.adapter = adapter
+        mainRecyclerView.adapter = adapter
+
+        adapter2 = RecentNotificationAdapter(mutableListOf())
+        recentlyClearedRecycleView.adapter = adapter2
 
         // Set our custom item animator
-        recyclerView.itemAnimator = NotificationItemAnimator()
+        mainRecyclerView.itemAnimator = NotificationItemAnimator()
 
         notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             NotificationSwitchStateHelper.saveSwitchState(this, isChecked)
@@ -89,7 +104,13 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
-        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
+        repository2.recentNotifications.observe(this) { newList ->
+            if(!isHandlingDelete) {
+                adapter2.updateList(newList)
+            }
+        }
+
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mainRecyclerView)
     }
 
     private val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -121,7 +142,7 @@ class DashboardActivity : AppCompatActivity() {
             }
 
             // Show snackbar with undo option
-            val snackbar = Snackbar.make(recyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
+            val snackbar = Snackbar.make(mainRecyclerView, "Notification deleted", Snackbar.LENGTH_LONG)
                 .setAction("UNDO") {
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
@@ -138,7 +159,7 @@ class DashboardActivity : AppCompatActivity() {
                                 adapter.insertItem(it, deletedPosition)
 
                                 // Scroll to the position if needed
-                                recyclerView.smoothScrollToPosition(deletedPosition)
+                                mainRecyclerView.smoothScrollToPosition(deletedPosition)
                             }
                         }
                     }
