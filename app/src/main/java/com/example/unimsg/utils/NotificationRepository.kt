@@ -20,4 +20,8 @@ class NotificationRepository(private val dao: NotificationDao) {
     suspend fun addNotificationAtIndex(notification: NotificationEntity) {
         dao.insertNotification(notification)
     }
+
+    suspend fun deleteAllNotification() {
+        dao.deleteAllNotifications()
+    }
 }

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.View
+import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -20,6 +21,7 @@ import androidx.room.Room
 import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.utils.NotificationAdapter
 import com.example.unimsg.utils.NotificationRepository
+import com.example.unimsg.utils.NotificationSwitchStateHelper
 import com.example.unimsg.utils.checkNotificationPermission
 import com.example.unimsg.utils.getStatusBarHeight
 import com.google.android.material.snackbar.Snackbar
@@ -39,6 +41,9 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_dashboard)
         checkNotificationPermission(this)
 
+        val notificationSwitch = findViewById<Switch>(R.id.switch_button_notification)
+        notificationSwitch.isChecked = NotificationSwitchStateHelper.getSwitchState(this)
+
         val dao = NotificationDatabase.getDatabase(this).notificationDao()
         repository = NotificationRepository(dao)
 
@@ -50,6 +55,22 @@ class DashboardActivity : AppCompatActivity() {
 
         adapter = NotificationAdapter(mutableListOf())
         recyclerView.adapter = adapter
+
+        notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+
+//            TODO("Enable notification lister only if the switch is checked, else clear the table and stop the service")
+            NotificationSwitchStateHelper.saveSwitchState(this, isChecked)
+            if (isChecked) {
+//                TODO("Show notifications")
+            } else {
+                // clear all notifications
+                lifecycleScope.launch(Dispatchers.IO) {
+                    repository.deleteAllNotification()
+                }
+            }
+
+
+        }
 
         repository.notifications.observe(this) { newList ->
             adapter.updateList(newList)
