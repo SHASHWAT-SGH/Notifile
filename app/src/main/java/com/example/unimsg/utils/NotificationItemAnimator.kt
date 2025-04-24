@@ -149,12 +149,7 @@ class NotificationItemAnimator : DefaultItemAnimator() {
     }
 
     override fun endAnimations() {
-        var i = 0
-        while (i < itemCount) {
-            val viewHolder = recyclerView?.findViewHolderForAdapterPosition(i)
-            viewHolder?.let { endAnimation(it) }
-            i++
-        }
+
         super.endAnimations()
     }
 }

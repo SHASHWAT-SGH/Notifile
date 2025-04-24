@@ -75,7 +75,7 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
             val diffResult = DiffUtil.calculateDiff(diffCallback, true) // true = detect moves
 
             // Apply changes on main thread
-            holder.post {
+            holder.get()?.post {
                 notifications.clear()
                 notifications.addAll(newList)
                 diffResult.dispatchUpdatesTo(this@NotificationAdapter)
