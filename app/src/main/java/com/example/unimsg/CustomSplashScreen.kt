@@ -7,12 +7,15 @@ import android.os.Looper
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
 class CustomSplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
+
+        enableEdgeToEdge()
 
         val logo = findViewById<ImageView>(R.id.logo_image)
         val appName = findViewById<TextView>(R.id.app_name)
