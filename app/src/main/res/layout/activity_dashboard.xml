@@ -34,8 +34,31 @@
                 android:trackTint="#4B4A4A"
                 android:showText="false"
                 android:padding="10dp"
-                android:layout_weight="1"
+
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:layout_marginRight="20dp"
+            >
+            <TextView
+                android:id="@+id/btn_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search..."
+                android:background="@drawable/bg_card_notification"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="5dp"
+                android:textColor="@color/black_light"
+                android:clickable="true"
+                />
+
+        </LinearLayout>
+
+
     </LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
