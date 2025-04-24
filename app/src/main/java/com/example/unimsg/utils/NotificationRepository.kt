@@ -24,4 +24,5 @@ class NotificationRepository(private val dao: NotificationDao) {
     suspend fun deleteAllNotification() {
         dao.deleteAllNotifications()
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.unimsg
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -9,6 +10,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.View
 import android.widget.Switch
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -43,6 +46,12 @@ class DashboardActivity : AppCompatActivity() {
 
         val notificationSwitch = findViewById<Switch>(R.id.switch_button_notification)
         notificationSwitch.isChecked = NotificationSwitchStateHelper.getSwitchState(this)
+
+        val btnSearch = findViewById<TextView>(R.id.btn_search)
+        btnSearch.setOnClickListener {
+            val intent = Intent(this, SearchAndFilterActivity::class.java)
+            startActivity(intent)
+        }
 
         val dao = NotificationDatabase.getDatabase(this).notificationDao()
         repository = NotificationRepository(dao)
