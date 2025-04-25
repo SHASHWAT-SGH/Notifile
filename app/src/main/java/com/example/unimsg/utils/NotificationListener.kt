@@ -20,6 +20,7 @@ import java.time.LocalDateTime
 class NotificationListener : NotificationListenerService() {
 
     lateinit var repository: NotificationRepository
+    lateinit var repository2 : RecentNotificationRepository
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val notificationSwitch = NotificationSwitchStateHelper.getSwitchState(this)
@@ -97,6 +98,10 @@ class NotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
+        val notificationSwitch = NotificationSwitchStateHelper.getSwitchState(this)
+        if(!notificationSwitch){
+            return
+        }
         sbn?.let {
             Log.d("NotificationListener", "Notification removed from ${it.packageName}")
             val packageName = it.packageName // App package name
@@ -126,9 +131,12 @@ class NotificationListener : NotificationListenerService() {
                 null
             }
 
+            val dao = NotificationDatabase.getDatabase(this).recentlyClearedNotificationDao()
+            repository2 = RecentNotificationRepository(dao)
+
             CoroutineScope(Dispatchers.IO).launch {
-                val database = NotificationDatabase.getDatabase(applicationContext)
-                val dao = database.recentlyClearedNotificationDao()
+//                val database = NotificationDatabase.getDatabase(applicationContext)
+//                val dao = database.recentlyClearedNotificationDao()
 
                 val entity = RecentlyClearedNotificationEntity(
                     appName = appName,
@@ -137,7 +145,8 @@ class NotificationListener : NotificationListenerService() {
                     time = timestamp,
                     appIcon = drawableToByteArray(appIcon)
                 )
-                dao.insert(entity)
+//                dao.insert(entity)
+                repository2.insertNotificaions(entity)
             }
         }
     }
