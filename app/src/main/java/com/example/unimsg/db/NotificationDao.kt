@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import java.time.LocalDateTime
 
 @Dao
 interface NotificationDao {
@@ -19,5 +20,8 @@ interface NotificationDao {
 
     @Query("DELETE FROM notifications")
     suspend fun deleteAllNotifications()
+
+    @Query("DELETE FROM notifications WHERE time <= :cutoff")
+    suspend fun deleteOldNotifications(cutoff: LocalDateTime)
 }
 

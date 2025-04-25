@@ -11,11 +11,15 @@ import android.widget.Switch
 import com.example.unimsg.R
 import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.db.NotificationEntity
+import com.example.unimsg.db.RecentlyClearedNotificationEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class NotificationListener : NotificationListenerService() {
+
+    lateinit var repository: NotificationRepository
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val notificationSwitch = NotificationSwitchStateHelper.getSwitchState(this)
@@ -57,11 +61,14 @@ class NotificationListener : NotificationListenerService() {
             val pendingIntent: PendingIntent? = notification.contentIntent
 //            pendingIntent?.send()
 
+            val dao = NotificationDatabase.getDatabase(this).notificationDao()
+            repository = NotificationRepository(dao)
+
 
             // Add to NotificationRepository
             CoroutineScope(Dispatchers.IO).launch {
-                val database = NotificationDatabase.getDatabase(applicationContext)
-                val dao = database.notificationDao()
+//                val database = NotificationDatabase.getDatabase(applicationContext)
+//                val dao = database.notificationDao()
 
                 val entity = NotificationEntity(
                     appName = appName,
@@ -71,7 +78,8 @@ class NotificationListener : NotificationListenerService() {
                     appIcon = drawableToByteArray(appIcon)
                 )
 
-                dao.insertNotification(entity)
+//                dao.insertNotification(entity)
+                repository.addNotification(entity)
             }
 
 
@@ -91,6 +99,46 @@ class NotificationListener : NotificationListenerService() {
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         sbn?.let {
             Log.d("NotificationListener", "Notification removed from ${it.packageName}")
+            val packageName = it.packageName // App package name
+            val notification = it.notification
+            val extras = notification.extras
+
+            // Get App Name (using package manager)
+            val appName = try {
+                val appInfo = packageManager.getApplicationInfo(packageName, 0)
+                packageManager.getApplicationLabel(appInfo).toString()
+            } catch (e: Exception) {
+                packageName
+            }
+
+            // Get Notification Title & Description
+            val title = extras.getString("android.title") ?: "No Title"
+            val description = extras.getString("android.text") ?: "No Description"
+
+            // Get Notification Time & Date
+            val timestamp = formatTime(it.postTime)
+
+            // Get App Icon
+            val appIcon: Drawable? = try {
+                packageManager.getApplicationIcon(packageName)
+
+            } catch (e: Exception) {
+                null
+            }
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val database = NotificationDatabase.getDatabase(applicationContext)
+                val dao = database.recentlyClearedNotificationDao()
+
+                val entity = RecentlyClearedNotificationEntity(
+                    appName = appName,
+                    notificationHeading = title,
+                    notificationContent = description,
+                    time = timestamp,
+                    appIcon = drawableToByteArray(appIcon)
+                )
+                dao.insert(entity)
+            }
         }
     }
 }

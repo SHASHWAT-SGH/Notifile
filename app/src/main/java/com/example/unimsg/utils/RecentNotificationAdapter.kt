@@ -9,11 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.R
-import com.example.unimsg.db.NotificationEntity
+import com.example.unimsg.db.RecentlyClearedNotificationEntity
 import java.util.concurrent.Executors
 
-class NotificationAdapter(private var notifications: MutableList<NotificationEntity>) :
-    RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+class RecentNotificationAdapter(private var recentNotifications: MutableList<RecentlyClearedNotificationEntity>) :
+    RecyclerView.Adapter<RecentNotificationAdapter.NotificationViewHolder>(){
 
     // Background thread for calculating diffs
     private val diffExecutor = Executors.newSingleThreadExecutor()
@@ -31,13 +31,13 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): com.example.unimsg.utils.RecentNotificationAdapter.NotificationViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_notification, parent, false)
-        return NotificationViewHolder(view)
+        return com.example.unimsg.utils.RecentNotificationAdapter.NotificationViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
-        val notification = notifications[position]
+    override fun onBindViewHolder(holder: com.example.unimsg.utils.RecentNotificationAdapter.NotificationViewHolder, position: Int) {
+        val notification = recentNotifications[position]
 
         // Set app icon safely
         val byteArrayAppIcon = notification.appIcon
@@ -61,47 +61,47 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
     }
 
     override fun getItemId(position: Int): Long {
-        return notifications[position].id.toLong()
+        return recentNotifications[position].id.toLong()
     }
 
-    override fun getItemCount(): Int = notifications.size
+    override fun getItemCount(): Int = recentNotifications.size
 
     // Use a better update mechanism for the list
-    fun updateList(newList: List<NotificationEntity>) {
+    fun updateList(newList: List<RecentlyClearedNotificationEntity>) {
         // Calculate diff in background thread
         diffExecutor.execute {
-            val oldList = ArrayList(notifications)
+            val oldList = ArrayList(recentNotifications)
             val diffCallback = NotificationDiffCallback(oldList, newList)
             val diffResult = DiffUtil.calculateDiff(diffCallback, true) // true = detect moves
 
             // Apply changes on main thread
             holder.get()?.post {
-                notifications.clear()
-                notifications.addAll(newList)
-                diffResult.dispatchUpdatesTo(this@NotificationAdapter)
+                recentNotifications.clear()
+                recentNotifications.addAll(newList)
+                diffResult.dispatchUpdatesTo(this@RecentNotificationAdapter)
             }
         }
     }
 
     // For single item updates
-    fun insertItem(notification: NotificationEntity, position: Int) {
-        notifications.add(position, notification)
+    fun insertItem(notification: RecentlyClearedNotificationEntity, position: Int) {
+        recentNotifications.add(position, notification)
         notifyItemInserted(position)
     }
 
     fun removeItem(position: Int) {
-        if (position >= 0 && position < notifications.size) {
-            notifications.removeAt(position)
+        if (position >= 0 && position < recentNotifications.size) {
+            recentNotifications.removeAt(position)
             notifyItemRemoved(position)
             // Important: This triggers the move animation for items below
-            notifyItemRangeChanged(position, notifications.size - position)
+            notifyItemRangeChanged(position, recentNotifications.size - position)
         }
     }
 
     // DiffUtil implementation
     private inner class NotificationDiffCallback(
-        private val oldList: List<NotificationEntity>,
-        private val newList: List<NotificationEntity>
+        private val oldList: List<RecentlyClearedNotificationEntity>,
+        private val newList: List<RecentlyClearedNotificationEntity>
     ) : DiffUtil.Callback() {
 
         override fun getOldListSize(): Int = oldList.size
@@ -136,4 +136,5 @@ class NotificationAdapter(private var notifications: MutableList<NotificationEnt
             }
         }
     }
+
 }
