@@ -94,6 +94,7 @@ class DashboardActivity : AppCompatActivity() {
             if (!isChecked) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     repository.deleteAllNotification()
+                    repository2.deleteAllNotifications()
                 }
             }
         }

@@ -11,4 +11,8 @@ class RecentNotificationRepository(private val dao: RecentlyClearedNotificationD
     suspend fun insertNotificaions(recent: RecentlyClearedNotificationEntity){
         dao.insert(recent)
     }
+
+    suspend fun deleteAllNotifications() {
+        dao.deleteAllNotifications()
+    }
 }
