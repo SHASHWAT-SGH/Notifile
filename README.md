@@ -60,24 +60,151 @@
 
 ### Project Structure
 ```
-UniMsg/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/example/unimsg/
-│   │   │   │   ├── MainActivity.kt           # Main dashboard
-│   │   │   │   ├── MessageAdapter.kt        # RecyclerView adapter
-│   │   │   │   ├── LoginActivity.kt         # Authentication screen
-│   │   │   │   ├── SyncWorker.kt            # Background sync
-│   │   │   │   └── SettingsFragment.kt      # User preferences
-│   │   │   ├── res/
-│   │   │   │   ├── layout/
-│   │   │   │   │   ├── activity_main.xml    # Main UI
-│   │   │   │   │   ├── item_message.xml     # Message item layout
-│   │   │   │   │   └── activity_login.xml   # Login UI
-│   │   │   │   └── xml/preferences.xml      # Settings config
-│   └── build.gradle                         # App dependencies
-└── README.md                                # Project documentation
+├── .gitignore
+├── .idea
+    ├── AndroidProjectSystem.xml
+    ├── compiler.xml
+    ├── deploymentTargetSelector.xml
+    ├── gradle.xml
+    ├── kotlinc.xml
+    ├── material_theme_project_new.xml
+    ├── migrations.xml
+    ├── misc.xml
+    ├── runConfigurations.xml
+    └── vcs.xml
+├── README.md
+├── app
+    ├── .gitignore
+    ├── build.gradle.kts
+    ├── proguard-rules.pro
+    └── src
+    │   ├── androidTest
+    │       └── java
+    │       │   └── com
+    │       │       └── example
+    │       │           └── unimsg
+    │       │               └── ExampleInstrumentedTest.kt
+    │   ├── main
+    │       ├── AndroidManifest.xml
+    │       ├── ic_launcher-playstore.png
+    │       ├── java
+    │       │   └── com
+    │       │   │   └── example
+    │       │   │       └── unimsg
+    │       │   │           ├── CustomSplashScreen.kt
+    │       │   │           ├── DashboardActivity.kt
+    │       │   │           ├── MainActivity.kt
+    │       │   │           ├── OnboardingActivity.kt
+    │       │   │           ├── SearchAndFilterActivity.kt
+    │       │   │           ├── db
+    │       │   │               ├── Converters.kt
+    │       │   │               ├── NotificationDao.kt
+    │       │   │               ├── NotificationDatabase.kt
+    │       │   │               ├── NotificationEntity.kt
+    │       │   │               ├── RecentlyClearedNotificationDao.kt
+    │       │   │               └── RecentlyClearedNotificationEntity.kt
+    │       │   │           └── utils
+    │       │   │               ├── DrawableToByteArray.kt
+    │       │   │               ├── FirstLaunchHelper.kt
+    │       │   │               ├── NotificationAdapter.kt
+    │       │   │               ├── NotificationItemAnimator.kt
+    │       │   │               ├── NotificationListener.kt
+    │       │   │               ├── NotificationModel.kt
+    │       │   │               ├── NotificationRepository.kt
+    │       │   │               ├── NotificationSwitchStateHelper.kt
+    │       │   │               ├── OnboardingViewPagerAdapter.kt
+    │       │   │               ├── Permissions.kt
+    │       │   │               ├── RecentNotificationAdapter.kt
+    │       │   │               ├── RecentNotificationRepository.kt
+    │       │   │               ├── SafeAreaInsets.kt
+    │       │   │               └── TimeStamp.kt
+    │       └── res
+    │       │   ├── anim
+    │       │       ├── fade_in.xml
+    │       │       ├── fade_in_card.xml
+    │       │       ├── fade_out_card.xml
+    │       │       ├── slide_in_right.xml
+    │       │       ├── slide_out_left.xml
+    │       │       └── slide_up.xml
+    │       │   ├── drawable
+    │       │       ├── app_background.xml
+    │       │       ├── baseline_delete_outline_24.xml
+    │       │       ├── bg_app.jpg
+    │       │       ├── bg_card_notification.xml
+    │       │       ├── dot.xml
+    │       │       ├── ic_archive.xml
+    │       │       ├── ic_delete.xml
+    │       │       ├── ic_launcher_background.xml
+    │       │       ├── ic_launcher_foreground.xml
+    │       │       ├── ic_whatsapp.png
+    │       │       ├── icon.png
+    │       │       ├── img_onboarding_screen_1.png
+    │       │       ├── img_onboarding_screen_1_temp.png
+    │       │       ├── img_onboarding_screen_2.png
+    │       │       └── img_onboarding_screen_3.png
+    │       │   ├── font
+    │       │       ├── roboto.ttf
+    │       │       └── roboto_thin.xml
+    │       │   ├── layout
+    │       │       ├── activity_dashboard.xml
+    │       │       ├── activity_main.xml
+    │       │       ├── activity_onboarding.xml
+    │       │       ├── activity_search_and_filter.xml
+    │       │       ├── activity_splash_screen.xml
+    │       │       ├── item_notification.xml
+    │       │       └── view_onboarding_slider.xml
+    │       │   ├── mipmap-anydpi-v26
+    │       │       ├── ic_launcher.xml
+    │       │       └── ic_launcher_round.xml
+    │       │   ├── mipmap-hdpi
+    │       │       ├── ic_launcher.webp
+    │       │       ├── ic_launcher_foreground.webp
+    │       │       └── ic_launcher_round.webp
+    │       │   ├── mipmap-mdpi
+    │       │       ├── ic_launcher.webp
+    │       │       ├── ic_launcher_foreground.webp
+    │       │       └── ic_launcher_round.webp
+    │       │   ├── mipmap-xhdpi
+    │       │       ├── ic_launcher.webp
+    │       │       ├── ic_launcher_foreground.webp
+    │       │       └── ic_launcher_round.webp
+    │       │   ├── mipmap-xxhdpi
+    │       │       ├── ic_launcher.webp
+    │       │       ├── ic_launcher_foreground.webp
+    │       │       └── ic_launcher_round.webp
+    │       │   ├── mipmap-xxxhdpi
+    │       │       ├── ic_launcher.webp
+    │       │       ├── ic_launcher_foreground.webp
+    │       │       └── ic_launcher_round.webp
+    │       │   ├── values-night
+    │       │       └── themes.xml
+    │       │   ├── values
+    │       │       ├── colors.xml
+    │       │       ├── font_certs.xml
+    │       │       ├── ic_launcher_background.xml
+    │       │       ├── preloaded_fonts.xml
+    │       │       ├── strings.xml
+    │       │       └── themes.xml
+    │       │   └── xml
+    │       │       ├── backup_rules.xml
+    │       │       └── data_extraction_rules.xml
+    │   └── test
+    │       └── java
+    │           └── com
+    │               └── example
+    │                   └── unimsg
+    │                       └── ExampleUnitTest.kt
+├── build.gradle.kts
+├── gradle.properties
+├── gradle
+    ├── libs.versions.toml
+    └── wrapper
+    │   ├── gradle-wrapper.jar
+    │   └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle.kts
+
 ```
 
 ### Implementation Highlights
