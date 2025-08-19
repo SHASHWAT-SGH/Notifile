@@ -1,6 +1,6 @@
-# UniMsg - Centralized Message Dashboard
+# Notifile - Centralized Message Dashboard
 
-**UniMsg** is an Android application built with Kotlin in Android Studio, designed to streamline communication and enhance message management. It provides a centralized dashboard where users can view, organize, and interact with messages from multiple sources (e.g., SMS, email, or in-app messages) through a unified, customizable interface.
+**Notifile** is an Android application built with Kotlin in Android Studio, designed to streamline communication and enhance message management. It provides a centralized dashboard where users can view, organize, and interact with messages from multiple sources (e.g., SMS, email, or in-app messages) through a unified, customizable interface.
 
 ## Features
 
@@ -23,17 +23,17 @@
 ### Steps
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/UniMsg/UniMsg.git
+   git clone https://github.com/Notifile/Notifile.git
    ```
 2. **Open in Android Studio**:
    - Launch Android Studio.
-   - Select "Open an existing project" and navigate to the cloned `UniMsg` folder.
+   - Select "Open an existing project" and navigate to the cloned `Notifile` folder.
 3. **Sync Project**:
    - Ensure an internet connection for Gradle to download dependencies.
    - Click "Sync Project with Gradle Files" in Android Studio.
 4. **Run the App**:
    - Connect an Android device or start an emulator.
-   - Click `Run > Run 'app'` (Shift + F10) to build and install UniMsg.
+   - Click `Run > Run 'app'` (Shift + F10) to build and install Notifile.
 
 ## Usage
 
@@ -82,7 +82,7 @@
     │       └── java
     │       │   └── com
     │       │       └── example
-    │       │           └── unimsg
+    │       │           └── Notifile
     │       │               └── ExampleInstrumentedTest.kt
     │   ├── main
     │       ├── AndroidManifest.xml
@@ -90,7 +90,7 @@
     │       ├── java
     │       │   └── com
     │       │   │   └── example
-    │       │   │       └── unimsg
+    │       │   │       └── Notifile
     │       │   │           ├── CustomSplashScreen.kt
     │       │   │           ├── DashboardActivity.kt
     │       │   │           ├── MainActivity.kt
@@ -192,7 +192,7 @@
     │       └── java
     │           └── com
     │               └── example
-    │                   └── unimsg
+    │                   └── Notifile
     │                       └── ExampleUnitTest.kt
 ├── build.gradle.kts
 ├── gradle.properties
@@ -215,14 +215,14 @@
 
 ## Contributing
 
-We welcome contributions to enhance UniMsg! To contribute:
+We welcome contributions to enhance Notifile! To contribute:
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature/your-feature`).
 3. Commit your changes (`git commit -m "Add your feature"`).
 4. Push to your branch (`git push origin feature/your-feature`).
 5. Open a Pull Request with a clear description of your changes.
 
-Please report bugs or suggest features via the [Issues](https://github.com/yourusername/UniMsg/issues) tab.
+Please report bugs or suggest features via the [Issues](https://github.com/yourusername/Notifile/issues) tab.
 
 ## License
 
