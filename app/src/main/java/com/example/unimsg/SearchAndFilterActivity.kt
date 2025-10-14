@@ -3,7 +3,9 @@ package com.example.unimsg
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.db.NotificationEntity
+import com.example.unimsg.utils.ModalDialogFragment
 import com.example.unimsg.utils.NotificationAdapter
 import com.example.unimsg.utils.NotificationRepository
 
@@ -22,6 +25,7 @@ class SearchAndFilterActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NotificationAdapter
     private lateinit var repository: NotificationRepository
+    private lateinit var filterButton: ImageButton
 
     private var allNotifications = listOf<NotificationEntity>()
 
@@ -39,6 +43,7 @@ class SearchAndFilterActivity : AppCompatActivity() {
         // Initialize views
         searchInput = findViewById(R.id.edit_txt_search)
         recyclerView = findViewById(R.id.recyclerView_search)
+        filterButton = findViewById(R.id.filterIcon)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = NotificationAdapter(mutableListOf())
         recyclerView.adapter = adapter
@@ -69,5 +74,10 @@ class SearchAndFilterActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        filterButton.setOnClickListener {
+            val modal = ModalDialogFragment()
+            modal.show(supportFragmentManager, "filter_modal")
+        }
     }
 }

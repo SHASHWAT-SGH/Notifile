@@ -85,7 +85,7 @@
                 android:id="@+id/recentlyClearedRecycleView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical"
+                android:scrollbars="none"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -101,7 +101,7 @@
                 android:id="@+id/mainRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical"
+                android:scrollbars="none"
                 />
         </LinearLayout>
     </ScrollView>

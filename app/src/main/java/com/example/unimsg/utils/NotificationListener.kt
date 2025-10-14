@@ -3,19 +3,15 @@ package com.example.unimsg.utils
 import android.app.PendingIntent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
-import android.widget.Switch
-import com.example.unimsg.R
 import com.example.unimsg.db.NotificationDatabase
 import com.example.unimsg.db.NotificationEntity
 import com.example.unimsg.db.RecentlyClearedNotificationEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 class NotificationListener : NotificationListenerService() {
 
